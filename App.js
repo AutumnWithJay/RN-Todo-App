@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { theme } from './colors';
 
 export default function App() {
@@ -16,11 +16,14 @@ export default function App() {
     if (text === '') {
       return;
     }
-    const newToDos = Object.assign({}, toDos, { [Date.now()]: { text, work: working } });
+    const newToDos = {
+      ...toDos,
+      [Date.now()]: { text, work: working },
+    };
     setToDos(newToDos);
     setText('');
   };
-  console.log(text);
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -40,10 +43,16 @@ export default function App() {
           onChangeText={onChangeText}
           returnKeyType={'done'}
           placeholder={working ? '할일 추가' : '어디를 가고 싶나요?'}
-          style={styles.input}
           value={text}
-          blurOnSubmit={true}
+          style={styles.input}
         />
+        <ScrollView>
+          {Object.keys(toDos).map((key) => (
+            <View style={styles.toDo} key={key}>
+              <Text style={styles.toDoText}>{toDos[key].text}</Text>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     </View>
   );
@@ -65,11 +74,23 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.white,
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 20,
-    marginTop: 20,
+    marginVertical: 20,
     fontSize: 15,
+  },
+  toDo: {
+    backgroundColor: theme.toDoBg,
+    marginBottom: 15,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  toDoText: {
+    color: theme.white,
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
