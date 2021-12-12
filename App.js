@@ -14,20 +14,35 @@ import { Fontisto } from '@expo/vector-icons';
 import { theme } from './colors';
 
 const STORAGE_KEY = '@todos';
+const LAST_MENU = '@menu';
 
 export default function App() {
   useEffect(() => {
+    loadLastMenu();
     loadToDos();
   }, []);
 
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
   const [toDos, setToDos] = useState({});
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
+  const travel = () => {
+    AsyncStorage.setItem(LAST_MENU, JSON.stringify('travel'));
+    setWorking(false);
+  };
+  const work = () => {
+    AsyncStorage.setItem(LAST_MENU, JSON.stringify('work'));
+    setWorking(true);
+  };
   const onChangeText = (payload) => {
     setText(payload);
   };
+
+  const loadLastMenu = async () => {
+    const getLastMenu = await AsyncStorage.getItem(LAST_MENU);
+    JSON.parse(getLastMenu) === 'work' ? setWorking(true) : setWorking(false);
+  };
+
+  // Todo Part
   const saveToDos = async (toSave) => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   };
@@ -68,6 +83,7 @@ export default function App() {
       },
     ]);
   };
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
